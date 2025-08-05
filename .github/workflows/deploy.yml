@@ -150,23 +150,7 @@ jobs:
         echo "📊 部署状态:"
         kubectl get pods -n la-mian --insecure-skip-tls-verify
 
-    - name: Notify deployment status
-      if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-          🚀 Deployment Status: ${{ job.status }}
-          
-          📦 Repository: ${{ github.repository }}
-          🔄 Branch: ${{ github.ref_name }}
-          📝 Commit: ${{ github.sha }}
-          
-          🌐 Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          
-          📊 Status: ${{ job.status }}
-          ⏱️ Duration: ${{ job.steps.*.duration }}
+
 
   connection-failed:
     runs-on: ubuntu-latest
@@ -183,20 +167,20 @@ jobs:
         echo "3. 网络连接是否正常"
         echo "4. 防火墙是否允许 6443 端口"
         
-    - name: Notify connection failure
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-          ❌ K3s 连接验证失败
-          
-          📦 Repository: ${{ github.repository }}
-          🔄 Branch: ${{ github.ref_name }}
-          📝 Commit: ${{ github.sha }}
-          
-          📋 请检查:
-          1. KUBE_CONFIG Secret 配置
-          2. K3s 服务器状态
-          3. 网络连接
-          4. 防火墙设置 
+    # - name: Notify connection failure
+    #   uses: appleboy/telegram-action@master
+    #   with:
+    #     to: ${{ secrets.TELEGRAM_TO }}
+    #     token: ${{ secrets.TELEGRAM_TOKEN }}
+    #     message: |
+    #       ❌ K3s 连接验证失败
+    #       
+    #       📦 Repository: ${{ github.repository }}
+    #       🔄 Branch: ${{ github.ref_name }}
+    #       📝 Commit: ${{ github.sha }}
+    #       
+    #       📋 请检查:
+    #       1. KUBE_CONFIG Secret 配置
+    #       2. K3s 服务器状态
+    #       3. 网络连接
+    #       4. 防火墙设置 
