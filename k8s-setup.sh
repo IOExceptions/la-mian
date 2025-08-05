@@ -29,7 +29,7 @@ kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f -
 echo "🔐 创建镜像拉取 Secret..."
 kubectl create secret docker-registry ghcr-secret \
   --docker-server=ghcr.io \
-  --docker-username=your-username \
+  --docker-username=ioexceptions \
   --docker-password=your-github-token \
   --namespace=la-mian \
   --dry-run=client -o yaml | kubectl apply -f -

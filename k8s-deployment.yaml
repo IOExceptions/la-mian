@@ -19,7 +19,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: la-mian
-        image: ghcr.io/your-username/la-mian:latest
+        image: ghcr.io/ioexceptions/la-mian:latest
         ports:
         - containerPort: 3000
         env:
