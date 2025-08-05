@@ -67,8 +67,9 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha,scope=la-mian
-        cache-to: type=gha,mode=max,scope=la-mian
+        # 临时禁用缓存以解决 GitHub 服务问题
+        # cache-from: type=gha,scope=la-mian
+        # cache-to: type=gha,mode=max,scope=la-mian
         build-args: |
           BUILDKIT_INLINE_CACHE=1
 
