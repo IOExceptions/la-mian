@@ -27,7 +27,7 @@
 
 ```yaml
 - name: Log in to Container Registry
-  uses: docker/login-action@v3
+  uses: docker/login-action@v3 
   with:
     registry: ${{ env.REGISTRY }} 
     username: ${{ github.actor }}
