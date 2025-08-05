@@ -3,12 +3,6 @@ name: Deploy to K3s
 on:
   push:
     branches: [ main, master ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'README.md'
-      - '.github/workflows/ci.yml'
-      - 'tests/**'
   pull_request:
     branches: [ main, master ]
 
