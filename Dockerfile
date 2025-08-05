@@ -1,4 +1,4 @@
-# 多阶段构建 Dockerfile
+# 多阶段构建 Dockerfile - 优化版本
 FROM node:18-alpine AS base
 
 # 安装依赖
@@ -12,7 +12,7 @@ COPY pnpm-lock.yaml ./
 
 # 安装依赖
 RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prefer-offline
 
 # 构建应用
 FROM base AS builder
@@ -22,6 +22,7 @@ COPY . .
 
 # 设置环境变量
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV production
 
 # 构建应用
 RUN npm run build
