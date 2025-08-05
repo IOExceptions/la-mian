@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
 import { useState } from "react"
+import { BottomNav } from "@/components/bottom-nav"
 
 export default function ProfilePage() {
   const { t, language, setLanguage } = useLanguage()
@@ -295,6 +296,7 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+      <BottomNav />
     </div>
   )
 }
