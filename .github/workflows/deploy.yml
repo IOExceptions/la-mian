@@ -87,9 +87,9 @@ jobs:
         echo "🔍 验证 kubeconfig 配置..."
         kubectl config view --minify
         
-        # 测试连接
+        # 测试连接（跳过 TLS 验证）
         echo "🔗 测试集群连接..."
-        kubectl cluster-info || {
+        kubectl cluster-info --insecure-skip-tls-verify || {
           echo "❌ 集群连接失败"
           echo "📋 请检查以下内容:"
           echo "1. KUBE_CONFIG Secret 是否正确"
@@ -106,24 +106,24 @@ jobs:
         echo "🚀 开始部署..."
         
         # 创建命名空间（如果不存在）
-        kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f -
+        kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f --insecure-skip-tls-verify
         
         # 检查部署是否存在
-        if kubectl get deployment la-mian-app -n la-mian 2>/dev/null; then
+        if kubectl get deployment la-mian-app -n la-mian --insecure-skip-tls-verify 2>/dev/null; then
           echo "📦 更新现有部署..."
-          kubectl set image deployment/la-mian-app la-mian=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -n la-mian
+          kubectl set image deployment/la-mian-app la-mian=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -n la-mian --insecure-skip-tls-verify
         else
           echo "📦 创建新部署..."
-          kubectl apply -f k8s-deployment.yaml
+          kubectl apply -f k8s-deployment.yaml --insecure-skip-tls-verify
         fi
         
         # 等待部署完成
         echo "⏳ 等待部署完成..."
-        kubectl rollout status deployment/la-mian-app -n la-mian --timeout=120s
+        kubectl rollout status deployment/la-mian-app -n la-mian --timeout=120s --insecure-skip-tls-verify
         
         # 检查部署状态
         echo "📊 部署状态:"
-        kubectl get pods -n la-mian
+        kubectl get pods -n la-mian --insecure-skip-tls-verify
 
     - name: Notify deployment status
       if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
