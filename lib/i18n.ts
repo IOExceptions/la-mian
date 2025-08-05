@@ -50,7 +50,7 @@ export const translations = {
     orderNow: "立即点餐",
     selectOptions: "选择规格",
 
-    // Profile
+    // Profile - 个人中心
     login: "登录",
     logout: "退出登录",
     myOrders: "我的订单",
@@ -68,6 +68,54 @@ export const translations = {
     completed: "已完成",
     points: "积分",
 
+    // Profile Details - 个人中心详细信息
+    personalInfo: "个人信息",
+    personalInfoDesc: "管理您的个人资料和账户信息",
+    accountSettings: "账户设置",
+    notificationsDesc: "管理推送通知和消息提醒",
+    helpCenterDesc: "常见问题和客服支持",
+    aboutUs: "关于我们",
+    aboutUsDesc: "了解我们的品牌和服务",
+    myFavoritesDesc: "查看您收藏的商品",
+    addressesDesc: "管理您的收货地址",
+    couponsDesc: "查看可用的优惠券",
+    settingsDesc: "应用设置和偏好",
+    pointsMallDesc: "使用积分兑换商品",
+
+    // Member System - 会员系统
+    bronzeMember: "青铜会员",
+    silverMember: "白银会员",
+    goldMember: "黄金会员",
+    diamondMember: "钻石会员",
+    memberProgress: "会员进度",
+    pointsToNextLevel: "还需 {points} 积分升级",
+    userAvatar: "用户头像",
+    editProfile: "编辑资料",
+    viewAll: "查看全部",
+    memberLevel: "会员等级",
+    totalPoints: "总积分",
+    availablePoints: "可用积分",
+
+    // Order Status - 订单状态
+    orderHistory: "历史订单",
+    orderStatus: "订单状态",
+    preparing: "制作中",
+    ready: "待取餐",
+    cancelled: "已取消",
+    all: "全部",
+    pickupNumber: "取餐号",
+    estimatedTime: "预计时间",
+    contactStore: "联系店家",
+    customerService: "客服",
+    orderNumber: "订单号",
+    orderTime: "下单时间",
+    store: "门店",
+    subtotal: "小计",
+    deliveryFee: "配送费",
+    couponDiscount: "优惠券折扣",
+    totalAmount: "总计",
+    completedOrders: "已完成",
+
     // Coupons Page
     myCoupons: "我的优惠券",
     availableCoupons: "可用优惠券",
@@ -77,7 +125,6 @@ export const translations = {
     useNow: "立即使用",
     noCoupons: "暂无可用优惠券",
     couponApplied: "优惠券已应用",
-    couponDiscount: "优惠券抵扣",
     enterCouponCode: "输入优惠码",
     applyCoupon: "应用优惠券",
     invalidCoupon: "无效优惠券或不满足条件",
@@ -88,11 +135,7 @@ export const translations = {
     // Cart Page
     selectAll: "全选",
     items: "件商品",
-    deliveryTo: "配送至",
-    estimatedTime: "预计",
     changeAddress: "修改地址",
-    subtotal: "商品小计",
-    deliveryFee: "配送费",
     free: "免费",
     total: "总计",
     checkout: "去结算",
@@ -100,6 +143,20 @@ export const translations = {
     cartEmpty: "购物车是空的",
     goToOrder: "去点餐",
     buyMoreForFreeDelivery: "再购{amount}免配送费",
+
+    // Menu Categories
+    comboSets: "套餐",
+    tonkotsuRamen: "豚骨拉面",
+    shoyuRamen: "酱油拉面",
+    misoRamen: "味噌拉面",
+    tsukemen: "蘸面",
+    sides: "小食",
+    drinks: "饮料",
+
+    // Service
+    delivery: "外卖",
+    pickup: "自取",
+    cartEmpty: "暂无订单",
   },
   en: {
     // Navigation
@@ -144,7 +201,7 @@ export const translations = {
     orderNow: "Order Now",
     selectOptions: "Select Options",
 
-    // Profile
+    // Profile - Personal Center
     login: "Login",
     logout: "Logout",
     myOrders: "My Orders",
@@ -162,6 +219,54 @@ export const translations = {
     completed: "Completed",
     points: "Points",
 
+    // Profile Details
+    personalInfo: "Personal Info",
+    personalInfoDesc: "Manage your profile and account information",
+    accountSettings: "Account Settings",
+    notificationsDesc: "Manage push notifications and alerts",
+    helpCenterDesc: "FAQs and customer support",
+    aboutUs: "About Us",
+    aboutUsDesc: "Learn about our brand and services",
+    myFavoritesDesc: "View your favorite items",
+    addressesDesc: "Manage your delivery addresses",
+    couponsDesc: "View available coupons",
+    settingsDesc: "App settings and preferences",
+    pointsMallDesc: "Redeem items with points",
+
+    // Member System
+    bronzeMember: "Bronze Member",
+    silverMember: "Silver Member",
+    goldMember: "Gold Member",
+    diamondMember: "Diamond Member",
+    memberProgress: "Member Progress",
+    pointsToNextLevel: "{points} points needed to upgrade",
+    userAvatar: "User Avatar",
+    editProfile: "Edit Profile",
+    viewAll: "View All",
+    memberLevel: "Member Level",
+    totalPoints: "Total Points",
+    availablePoints: "Available Points",
+
+    // Order Status
+    orderHistory: "Order History",
+    orderStatus: "Order Status",
+    preparing: "Preparing",
+    ready: "Ready",
+    cancelled: "Cancelled",
+    all: "All",
+    pickupNumber: "Pickup #",
+    estimatedTime: "Estimated Time",
+    contactStore: "Contact Store",
+    customerService: "Customer Service",
+    orderNumber: "Order #",
+    orderTime: "Order Time",
+    store: "Store",
+    subtotal: "Subtotal",
+    deliveryFee: "Delivery Fee",
+    couponDiscount: "Coupon Discount",
+    totalAmount: "Total",
+    completedOrders: "Completed",
+
     // Coupons Page
     myCoupons: "My Coupons",
     availableCoupons: "Available Coupons",
@@ -171,7 +276,6 @@ export const translations = {
     useNow: "Use Now",
     noCoupons: "No coupons available",
     couponApplied: "Coupon Applied",
-    couponDiscount: "Coupon Discount",
     enterCouponCode: "Enter coupon code",
     applyCoupon: "Apply Coupon",
     invalidCoupon: "Invalid coupon or conditions not met",
@@ -182,11 +286,7 @@ export const translations = {
     // Cart Page
     selectAll: "Select All",
     items: "items",
-    deliveryTo: "Delivery to",
-    estimatedTime: "Estimated",
     changeAddress: "Change Address",
-    subtotal: "Subtotal",
-    deliveryFee: "Delivery Fee",
     free: "Free",
     total: "Total",
     checkout: "Checkout",
@@ -194,6 +294,20 @@ export const translations = {
     cartEmpty: "Your cart is empty",
     goToOrder: "Go to Order",
     buyMoreForFreeDelivery: "Buy ${amount} more for free delivery",
+
+    // Menu Categories
+    comboSets: "Combo Sets",
+    tonkotsuRamen: "Tonkotsu Ramen",
+    shoyuRamen: "Shoyu Ramen",
+    misoRamen: "Miso Ramen",
+    tsukemen: "Tsukemen",
+    sides: "Sides",
+    drinks: "Drinks",
+
+    // Service
+    delivery: "Delivery",
+    pickup: "Pickup",
+    cartEmpty: "No orders yet",
   },
   ja: {
     // Navigation
@@ -238,7 +352,7 @@ export const translations = {
     orderNow: "今すぐ注文",
     selectOptions: "オプション選択",
 
-    // Profile
+    // Profile - Personal Center
     login: "ログイン",
     logout: "ログアウト",
     myOrders: "注文履歴",
@@ -256,6 +370,54 @@ export const translations = {
     completed: "完了",
     points: "ポイント",
 
+    // Profile Details
+    personalInfo: "個人情報",
+    personalInfoDesc: "プロフィールとアカウント情報を管理",
+    accountSettings: "アカウント設定",
+    notificationsDesc: "プッシュ通知とアラートを管理",
+    helpCenterDesc: "よくある質問とカスタマーサポート",
+    aboutUs: "私たちについて",
+    aboutUsDesc: "ブランドとサービスについて",
+    myFavoritesDesc: "お気に入りの商品を表示",
+    addressesDesc: "配送先住所を管理",
+    couponsDesc: "利用可能なクーポンを表示",
+    settingsDesc: "アプリの設定と環境設定",
+    pointsMallDesc: "ポイントで商品を交換",
+
+    // Member System
+    bronzeMember: "ブロンズメンバー",
+    silverMember: "シルバーメンバー",
+    goldMember: "ゴールドメンバー",
+    diamondMember: "ダイヤモンドメンバー",
+    memberProgress: "メンバー進捗",
+    pointsToNextLevel: "アップグレードまであと{points}ポイント",
+    userAvatar: "ユーザーアバター",
+    editProfile: "プロフィール編集",
+    viewAll: "すべて表示",
+    memberLevel: "メンバーレベル",
+    totalPoints: "総ポイント",
+    availablePoints: "利用可能ポイント",
+
+    // Order Status
+    orderHistory: "注文履歴",
+    orderStatus: "注文状況",
+    preparing: "調理中",
+    ready: "受取準備完了",
+    cancelled: "キャンセル",
+    all: "すべて",
+    pickupNumber: "受取番号",
+    estimatedTime: "予想時間",
+    contactStore: "店舗に連絡",
+    customerService: "カスタマーサービス",
+    orderNumber: "注文番号",
+    orderTime: "注文時間",
+    store: "店舗",
+    subtotal: "小計",
+    deliveryFee: "配送料",
+    couponDiscount: "クーポン割引",
+    totalAmount: "合計",
+    completedOrders: "完了済み",
+
     // Coupons Page
     myCoupons: "マイクーポン",
     availableCoupons: "利用可能なクーポン",
@@ -265,7 +427,6 @@ export const translations = {
     useNow: "今すぐ使う",
     noCoupons: "利用可能なクーポンはありません",
     couponApplied: "クーポン適用済み",
-    couponDiscount: "クーポン割引",
     enterCouponCode: "クーポンコードを入力",
     applyCoupon: "クーポン適用",
     invalidCoupon: "無効なクーポンまたは条件を満たしていません",
@@ -276,11 +437,7 @@ export const translations = {
     // Cart Page
     selectAll: "すべて選択",
     items: "点",
-    deliveryTo: "配達先",
-    estimatedTime: "予定",
     changeAddress: "住所変更",
-    subtotal: "小計",
-    deliveryFee: "配送料",
     free: "無料",
     total: "合計",
     checkout: "会計へ",
@@ -288,6 +445,20 @@ export const translations = {
     cartEmpty: "カートは空です",
     goToOrder: "注文へ",
     buyMoreForFreeDelivery: "あと{amount}円で送料無料",
+
+    // Menu Categories
+    comboSets: "セット",
+    tonkotsuRamen: "豚骨ラーメン",
+    shoyuRamen: "醤油ラーメン",
+    misoRamen: "味噌ラーメン",
+    tsukemen: "つけ麺",
+    sides: "サイド",
+    drinks: "ドリンク",
+
+    // Service
+    delivery: "デリバリー",
+    pickup: "テイクアウト",
+    cartEmpty: "まだ注文がありません",
   },
 }
 

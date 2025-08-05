@@ -14,6 +14,8 @@ import {
   MapPin,
   Gift,
   Globe,
+  Star,
+  Crown,
 } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
 import { useState } from "react"
@@ -31,84 +33,63 @@ export default function ProfilePage() {
   const menuItems = [
     {
       icon: ShoppingBag,
-      label: {
-        zh: "我的订单",
-        en: "My Orders",
-        ja: "注文履歴",
-      },
+      label: t("myOrders"),
+      description: t("orderHistory"),
       href: "/orders",
       badge: "3",
     },
     {
       icon: User,
-      label: {
-        zh: "个人信息",
-        en: "Personal Info",
-        ja: "個人情報",
-      },
+      label: t("personalInfo"),
+      description: t("personalInfoDesc"),
       href: "/profile/info",
     },
     {
       icon: Heart,
-      label: {
-        zh: "我的收藏",
-        en: "My Favorites",
-        ja: "お気に入り",
-      },
+      label: t("myFavorites"),
+      description: t("myFavoritesDesc"),
       href: "/profile/favorites",
     },
     {
       icon: MapPin,
-      label: {
-        zh: "地址管理",
-        en: "Address Management",
-        ja: "住所管理",
-      },
+      label: t("addresses"),
+      description: t("addressesDesc"),
       href: "/profile/addresses",
     },
     {
       icon: Gift,
-      label: {
-        zh: "优惠券",
-        en: "Coupons",
-        ja: "クーポン",
-      },
+      label: t("coupons"),
+      description: t("couponsDesc"),
       href: "/coupons",
     },
     {
+      icon: ShoppingBag,
+      label: t("pointsMall"),
+      description: t("pointsMallDesc"),
+      href: "/mall",
+    },
+    {
       icon: Settings,
-      label: {
-        zh: "账户设置",
-        en: "Account Settings",
-        ja: "アカウント設定",
-      },
+      label: t("accountSettings"),
+      description: t("settingsDesc"),
       href: "/profile/settings",
     },
     {
       icon: Bell,
-      label: {
-        zh: "通知设置",
-        en: "Notifications",
-        ja: "通知設定",
-      },
+      label: t("notifications"),
+      description: t("notificationsDesc"),
       href: "/profile/notifications",
     },
     {
       icon: HelpCircle,
-      label: {
-        zh: "帮助中心",
-        en: "Help Center",
-        ja: "ヘルプセンター",
-      },
+      label: t("helpCenter"),
+      description: t("helpCenterDesc"),
       href: "/profile/help",
     },
     {
       icon: Info,
-      label: {
-        zh: "关于我们",
-        en: "About Us",
-        ja: "私たちについて",
-      },
+      label: t("aboutUs"),
+      description: t("aboutUsDesc"),
       href: "/profile/about",
     },
   ]
@@ -125,41 +106,27 @@ export default function ProfilePage() {
   }
 
   const getMemberLevel = () => {
-    switch (language) {
-      case "en":
-        return "Gold Member"
-      case "ja":
-        return "ゴールド会員"
-      default:
-        return "黄金会员"
-    }
+    return t("goldMember")
   }
 
   const getPointsText = () => {
-    switch (language) {
-      case "en":
-        return "Points"
-      case "ja":
-        return "ポイント"
-      default:
-        return "积分"
-    }
+    return t("points")
   }
 
   const getStatLabels = () => {
     return {
-      pendingPayment: language === "zh" ? "待付款" : language === "en" ? "Pending Payment" : "支払い待ち",
-      pendingPickup: language === "zh" ? "待取餐" : language === "en" ? "Pending Pickup" : "受取待ち",
-      completed: language === "zh" ? "已完成" : language === "en" ? "Completed" : "完了済み",
+      pendingPayment: t("pendingPayment"),
+      pendingPickup: t("pendingPickup"),
+      completed: t("completed"),
     }
   }
 
   const getLanguageSettings = () => {
-    return language === "zh" ? "语言设置" : language === "en" ? "Language Settings" : "言語設定"
+    return t("languageSettings")
   }
 
   const getLogoutText = () => {
-    return language === "zh" ? "退出登录" : language === "en" ? "Logout" : "ログアウト"
+    return t("logout")
   }
 
   const getCancelText = () => {
@@ -174,27 +141,57 @@ export default function ProfilePage() {
       <div className="bg-gradient-to-r from-red-600 to-orange-500 text-white">
         <div className="p-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-white/20 relative">
               <Image
-                src="/placeholder.svg?height=64&width=64&text=User"
-                alt="User Avatar"
+                src="/placeholder-user.jpg"
+                alt={t("userAvatar")}
                 width={64}
                 height={64}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.src = "/placeholder.svg?height=64&width=64&text=User"
+                }}
               />
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                <Crown className="w-3 h-3 text-white" />
+              </div>
             </div>
             <div>
               <h1 className="text-xl font-semibold">{getUserName()}</h1>
               <p className="text-white/80 text-sm">
-                {getMemberLevel()} • 1,280{getPointsText()}
+                {getMemberLevel()} • 1,280 {getPointsText()}
               </p>
+              <div className="flex items-center gap-1 mt-1">
+                <Star className="w-3 h-3 text-yellow-300 fill-current" />
+                <Star className="w-3 h-3 text-yellow-300 fill-current" />
+                <Star className="w-3 h-3 text-yellow-300 fill-current" />
+                <Star className="w-3 h-3 text-gray-300" />
+                <Star className="w-3 h-3 text-gray-300" />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Stats */}
+      {/* Member Progress */}
       <div className="bg-white mx-4 -mt-6 rounded-lg shadow-sm border border-gray-200 relative z-10">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">{t("memberProgress")}</span>
+            <span className="text-sm text-orange-600">{t("pointsToNextLevel").replace("{points}", "720")}</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-500"
+              style={{ width: "64%" }}
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="bg-white mx-4 mt-4 rounded-lg shadow-sm border border-gray-200">
         <div className="grid grid-cols-3 divide-x divide-gray-200">
           <Link href="/orders?status=pending" className="p-4 text-center hover:bg-gray-50">
             <div className="text-lg font-semibold text-red-600">2</div>
@@ -212,7 +209,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Menu Items */}
-      <div className="mt-6 space-y-2">
+      <div className="mt-6 space-y-1">
         {menuItems.map((item, index) => {
           const Icon = item.icon
           return (
@@ -222,10 +219,17 @@ export default function ProfilePage() {
               className="bg-white mx-4 p-4 flex items-center justify-between hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg border-b border-gray-100 last:border-b-0"
             >
               <div className="flex items-center gap-3">
-                <Icon className="w-5 h-5 text-gray-600" />
-                <span className="text-gray-900">{item.label[language as keyof typeof item.label]}</span>
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-gray-600" />
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">{item.label}</div>
+                  <div className="text-sm text-gray-500">{item.description}</div>
+                </div>
                 {item.badge && (
-                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">{item.badge}</span>
+                  <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full ml-auto mr-2">
+                    {item.badge}
+                  </span>
                 )}
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
@@ -241,8 +245,19 @@ export default function ProfilePage() {
           className="w-full p-4 flex items-center justify-between hover:bg-gray-50"
         >
           <div className="flex items-center gap-3">
-            <Globe className="w-5 h-5 text-gray-600" />
-            <span className="text-gray-900">{getLanguageSettings()}</span>
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+              <Globe className="w-5 h-5 text-gray-600" />
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">{getLanguageSettings()}</div>
+              <div className="text-sm text-gray-500">
+                {language === "zh"
+                  ? "选择您的首选语言"
+                  : language === "en"
+                    ? "Choose your preferred language"
+                    : "お好みの言語を選択"}
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">

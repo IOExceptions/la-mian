@@ -4,16 +4,62 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
-import { Star, Trophy, Clock } from "lucide-react"
+import { Star, Trophy, Clock, Gift, Zap, Crown, Sparkles } from "lucide-react"
 import { MiniHeader } from "@/components/mini-header"
 import { BottomNav } from "@/components/bottom-nav"
 import { useLanguage } from "@/contexts/language-context"
 
 const rewardTiers = [
-  { name: "青铜会员", nameEn: "Bronze", nameJa: "ブロンズ", points: 0, color: "bg-amber-600" },
-  { name: "白银会员", nameEn: "Silver", nameJa: "シルバー", points: 500, color: "bg-gray-400" },
-  { name: "黄金会员", nameEn: "Gold", nameJa: "ゴールド", points: 1000, color: "bg-yellow-500" },
-  { name: "钻石会员", nameEn: "Diamond", nameJa: "ダイヤモンド", points: 2000, color: "bg-blue-500" },
+  {
+    name: "青铜会员",
+    nameEn: "Bronze",
+    nameJa: "ブロンズ",
+    points: 0,
+    color: "bg-amber-600",
+    benefits: [
+      { name: "基础积分", nameEn: "Basic Points", nameJa: "基本ポイント", icon: Star },
+      { name: "生日优惠", nameEn: "Birthday Offer", nameJa: "誕生日特典", icon: Gift },
+    ],
+  },
+  {
+    name: "白银会员",
+    nameEn: "Silver",
+    nameJa: "シルバー",
+    points: 500,
+    color: "bg-gray-400",
+    benefits: [
+      { name: "1.2倍积分", nameEn: "1.2x Points", nameJa: "1.2倍ポイント", icon: Zap },
+      { name: "专属优惠券", nameEn: "Exclusive Coupons", nameJa: "専用クーポン", icon: Gift },
+      { name: "优先配送", nameEn: "Priority Delivery", nameJa: "優先配送", icon: Star },
+    ],
+  },
+  {
+    name: "黄金会员",
+    nameEn: "Gold",
+    nameJa: "ゴールド",
+    points: 1000,
+    color: "bg-yellow-500",
+    benefits: [
+      { name: "1.5倍积分", nameEn: "1.5x Points", nameJa: "1.5倍ポイント", icon: Zap },
+      { name: "免费配送", nameEn: "Free Delivery", nameJa: "送料無料", icon: Gift },
+      { name: "专属客服", nameEn: "VIP Support", nameJa: "専用サポート", icon: Crown },
+      { name: "月度礼品", nameEn: "Monthly Gift", nameJa: "月間ギフト", icon: Sparkles },
+    ],
+  },
+  {
+    name: "钻石会员",
+    nameEn: "Diamond",
+    nameJa: "ダイヤモンド",
+    points: 2000,
+    color: "bg-blue-500",
+    benefits: [
+      { name: "2倍积分", nameEn: "2x Points", nameJa: "2倍ポイント", icon: Zap },
+      { name: "全年免配送", nameEn: "Free Delivery All Year", nameJa: "年間送料無料", icon: Gift },
+      { name: "专属热线", nameEn: "Dedicated Hotline", nameJa: "専用ホットライン", icon: Crown },
+      { name: "限定商品", nameEn: "Exclusive Items", nameJa: "限定商品", icon: Sparkles },
+      { name: "优先预订", nameEn: "Priority Booking", nameJa: "優先予約", icon: Star },
+    ],
+  },
 ]
 
 const availableRewards = [
@@ -56,7 +102,7 @@ const availableRewards = [
     nameEn: "Chashu Rice Coupon",
     nameJa: "チャーシュー丼クーポン",
     points: 150,
-    image: "/chashu-rice.png",
+    image: "/chashu-rice-bowl.png",
     expires: "20天",
     expiresEn: "20 days",
     expiresJa: "20日",
@@ -111,6 +157,16 @@ export default function RewardsPage() {
     if (language === "ja") return item[`${field}Ja`] || item[field]
     return item[field]
   }
+
+  // 获取下一级会员的新增权益
+  const getNewBenefits = () => {
+    if (!nextTier) return []
+
+    const currentBenefitNames = currentTier.benefits.map((b) => getLocalizedText(b, "name"))
+    return nextTier.benefits.filter((benefit) => !currentBenefitNames.includes(getLocalizedText(benefit, "name")))
+  }
+
+  const newBenefits = getNewBenefits()
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -167,6 +223,100 @@ export default function RewardsPage() {
             </div>
           </>
         )}
+      </div>
+
+      {/* Next Tier Benefits */}
+      {nextTier && newBenefits.length > 0 && (
+        <div className="bg-white mx-4 my-4 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b bg-gradient-to-r from-yellow-50 to-orange-50">
+            <div className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-yellow-600" />
+              <h2 className="font-semibold text-gray-800">
+                {language === "en"
+                  ? `Upgrade to ${getLocalizedText(nextTier, "name")} Benefits`
+                  : language === "ja"
+                    ? `${getLocalizedText(nextTier, "name")}アップグレード特典`
+                    : `升级${getLocalizedText(nextTier, "name")}新增权益`}
+              </h2>
+            </div>
+          </div>
+          <div className="p-4">
+            <div className="grid grid-cols-1 gap-3">
+              {newBenefits.map((benefit, index) => {
+                const IconComponent = benefit.icon
+                return (
+                  <div
+                    key={index}
+                    className="flex items-center gap-3 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200"
+                  >
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                        <IconComponent className="w-4 h-4 text-white" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800 text-sm">{getLocalizedText(benefit, "name")}</p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-full">
+                        {language === "en" ? "NEW" : language === "ja" ? "新規" : "新增"}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="mt-4 p-3 bg-red-50 rounded-lg border border-red-200">
+              <p className="text-sm text-red-700 text-center">
+                {language === "en"
+                  ? `Only ${nextTier.points - currentPoints} more points to unlock these benefits!`
+                  : language === "ja"
+                    ? `あと${nextTier.points - currentPoints}ポイントでこれらの特典をアンロック！`
+                    : `再获得${nextTier.points - currentPoints}积分即可解锁这些权益！`}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Current Tier Benefits */}
+      <div className="bg-white mx-4 my-4 rounded-xl overflow-hidden">
+        <div className="px-4 py-3 border-b">
+          <div className="flex items-center gap-2">
+            <div className={`w-4 h-4 rounded-full ${currentTier.color}`}></div>
+            <h2 className="font-semibold text-gray-800">
+              {language === "en"
+                ? `Current ${getLocalizedText(currentTier, "name")} Benefits`
+                : language === "ja"
+                  ? `現在の${getLocalizedText(currentTier, "name")}特典`
+                  : `当前${getLocalizedText(currentTier, "name")}权益`}
+            </h2>
+          </div>
+        </div>
+        <div className="p-4">
+          <div className="grid grid-cols-1 gap-3">
+            {currentTier.benefits.map((benefit, index) => {
+              const IconComponent = benefit.icon
+              return (
+                <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-shrink-0">
+                    <div className={`w-8 h-8 ${currentTier.color} rounded-full flex items-center justify-center`}>
+                      <IconComponent className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800 text-sm">{getLocalizedText(benefit, "name")}</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                      {language === "en" ? "ACTIVE" : language === "ja" ? "有効" : "已激活"}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Available Rewards */}
