@@ -29,7 +29,7 @@
 - name: Log in to Container Registry
   uses: docker/login-action@v3 
   with:
-    registry: ${{ env.REGISTRY }} 
+    registry: ${{ env.REGISTRY }}  
     username: ${{ github.actor }}
     password: ${{ secrets.CR_PAT }}  # 使用自定义 Token
 ```
