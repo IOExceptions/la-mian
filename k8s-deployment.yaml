@@ -15,8 +15,7 @@ spec:
       labels:
         app: la-mian
     spec:
-      # imagePullSecrets:
-      # - name: ghcr-secret
+
       containers:
       - name: la-mian
         image: ghcr.io/ioexceptions/la-mian:latest
