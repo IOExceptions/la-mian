@@ -82,22 +82,47 @@ jobs:
       run: |
         echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
         export KUBECONFIG=kubeconfig.yaml
+        
+        # 验证 kubeconfig
+        echo "🔍 验证 kubeconfig 配置..."
+        kubectl config view --minify
+        
+        # 测试连接
+        echo "🔗 测试集群连接..."
+        kubectl cluster-info || {
+          echo "❌ 集群连接失败"
+          echo "📋 请检查以下内容:"
+          echo "1. KUBE_CONFIG Secret 是否正确"
+          echo "2. K3s 服务器是否运行"
+          echo "3. 网络连接是否正常"
+          exit 1
+        }
 
     - name: Deploy to K3s
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       run: |
         export KUBECONFIG=kubeconfig.yaml
         
+        echo "🚀 开始部署..."
+        
         # 创建命名空间（如果不存在）
         kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f -
         
-        # 更新 Kubernetes 部署
-        kubectl set image deployment/la-mian-app la-mian=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -n la-mian
+        # 检查部署是否存在
+        if kubectl get deployment la-mian-app -n la-mian 2>/dev/null; then
+          echo "📦 更新现有部署..."
+          kubectl set image deployment/la-mian-app la-mian=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest -n la-mian
+        else
+          echo "📦 创建新部署..."
+          kubectl apply -f k8s-deployment.yaml
+        fi
         
-        # 等待部署完成（减少超时时间）
+        # 等待部署完成
+        echo "⏳ 等待部署完成..."
         kubectl rollout status deployment/la-mian-app -n la-mian --timeout=120s
         
         # 检查部署状态
+        echo "📊 部署状态:"
         kubectl get pods -n la-mian
 
     - name: Notify deployment status
