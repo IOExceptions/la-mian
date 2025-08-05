@@ -144,7 +144,13 @@ jobs:
         
         # 等待部署完成
         echo "⏳ 等待部署完成..."
-        kubectl rollout status deployment/la-mian-app -n la-mian --timeout=120s --insecure-skip-tls-verify
+        kubectl rollout status deployment/la-mian-app -n la-mian --timeout=300s --insecure-skip-tls-verify || {
+          echo "❌ 部署超时，检查Pod状态..."
+          kubectl get pods -n la-mian --insecure-skip-tls-verify
+          kubectl describe pods -n la-mian --insecure-skip-tls-verify
+          kubectl logs -n la-mian -l app=la-mian --insecure-skip-tls-verify --tail=50
+          exit 1
+        }
         
         # 检查部署状态
         echo "📊 部署状态:"
@@ -167,20 +173,4 @@ jobs:
         echo "3. 网络连接是否正常"
         echo "4. 防火墙是否允许 6443 端口"
         
-    # - name: Notify connection failure
-    #   uses: appleboy/telegram-action@master
-    #   with:
-    #     to: ${{ secrets.TELEGRAM_TO }}
-    #     token: ${{ secrets.TELEGRAM_TOKEN }}
-    #     message: |
-    #       ❌ K3s 连接验证失败
-    #       
-    #       📦 Repository: ${{ github.repository }}
-    #       🔄 Branch: ${{ github.ref_name }}
-    #       📝 Commit: ${{ github.sha }}
-    #       
-    #       📋 请检查:
-    #       1. KUBE_CONFIG Secret 配置
-    #       2. K3s 服务器状态
-    #       3. 网络连接
-    #       4. 防火墙设置 
+ 
