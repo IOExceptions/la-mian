@@ -131,7 +131,7 @@ jobs:
         echo "🚀 开始部署..."
         
         # 创建命名空间（如果不存在）
-        kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f --insecure-skip-tls-verify
+        kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f - --insecure-skip-tls-verify
         
         # 检查部署是否存在
         if kubectl get deployment la-mian-app -n la-mian --insecure-skip-tls-verify 2>/dev/null; then
