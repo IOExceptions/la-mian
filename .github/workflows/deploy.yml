@@ -15,9 +15,55 @@ permissions:
   packages: write
 
 jobs:
+  verify-k3s-connection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      connection-status: ${{ steps.verify.outputs.status }}
+    
+    steps:
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
+        export KUBECONFIG=kubeconfig.yaml
+        
+        # 验证 kubeconfig
+        echo "🔍 验证 kubeconfig 配置..."
+        kubectl config view --minify
+        
+        # 测试连接（跳过 TLS 验证）
+        echo "🔗 测试集群连接..."
+        kubectl cluster-info --insecure-skip-tls-verify || {
+          echo "❌ 集群连接失败"
+          echo "📋 请检查以下内容:"
+          echo "1. KUBE_CONFIG Secret 是否正确"
+          echo "2. K3s 服务器是否运行"
+          echo "3. 网络连接是否正常"
+          exit 1
+        }
+        
+        # 检查集群状态
+        echo "📊 检查集群状态..."
+        kubectl get nodes --insecure-skip-tls-verify
+        kubectl get namespaces --insecure-skip-tls-verify
+        
+        echo "✅ K3s 连接验证成功"
+
+    - name: Set connection status
+      id: verify
+      run: |
+        echo "status=success" >> $GITHUB_OUTPUT
+
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # 设置超时时间
+    timeout-minutes: 15
+    needs: verify-k3s-connection
+    if: needs.verify-k3s-connection.outputs.connection-status == 'success'
     
     steps:
     - name: Checkout code
@@ -76,21 +122,6 @@ jobs:
       run: |
         echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig.yaml
         export KUBECONFIG=kubeconfig.yaml
-        
-        # 验证 kubeconfig
-        echo "🔍 验证 kubeconfig 配置..."
-        kubectl config view --minify
-        
-        # 测试连接（跳过 TLS 验证）
-        echo "🔗 测试集群连接..."
-        kubectl cluster-info --insecure-skip-tls-verify || {
-          echo "❌ 集群连接失败"
-          echo "📋 请检查以下内容:"
-          echo "1. KUBE_CONFIG Secret 是否正确"
-          echo "2. K3s 服务器是否运行"
-          echo "3. 网络连接是否正常"
-          exit 1
-        }
 
     - name: Deploy to K3s
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -135,4 +166,37 @@ jobs:
           🌐 Image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           
           📊 Status: ${{ job.status }}
-          ⏱️ Duration: ${{ job.steps.*.duration }} 
+          ⏱️ Duration: ${{ job.steps.*.duration }}
+
+  connection-failed:
+    runs-on: ubuntu-latest
+    needs: verify-k3s-connection
+    if: needs.verify-k3s-connection.outputs.connection-status != 'success'
+    
+    steps:
+    - name: Connection Failed Notification
+      run: |
+        echo "❌ K3s 连接验证失败"
+        echo "📋 请检查以下内容:"
+        echo "1. KUBE_CONFIG Secret 是否正确配置"
+        echo "2. K3s 服务器是否正在运行"
+        echo "3. 网络连接是否正常"
+        echo "4. 防火墙是否允许 6443 端口"
+        
+    - name: Notify connection failure
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          ❌ K3s 连接验证失败
+          
+          📦 Repository: ${{ github.repository }}
+          🔄 Branch: ${{ github.ref_name }}
+          📝 Commit: ${{ github.sha }}
+          
+          📋 请检查:
+          1. KUBE_CONFIG Secret 配置
+          2. K3s 服务器状态
+          3. 网络连接
+          4. 防火墙设置 
