@@ -22,7 +22,8 @@ import {
   CreditCard,
   User,
   Mail,
-  Phone as PhoneIcon
+  Phone as PhoneIcon,
+  Trash2
 } from "lucide-react"
 import { MiniHeader } from "@/components/mini-header"
 import { BottomNav } from "@/components/bottom-nav"
@@ -150,6 +151,30 @@ export default function CheckoutPage() {
     router.push(`/order-confirmation?orderType=${orderType}`)
   }
 
+  const removeItem = (index: number) => {
+    const itemName = getLocalizedText(selectedItems[index], "productName")
+    const confirmMessage = language === "en" 
+      ? `Remove "${itemName}" from cart?`
+      : language === "ja" 
+        ? `「${itemName}」をカートから削除しますか？`
+        : `确定要删除"${itemName}"吗？`
+    
+    if (window.confirm(confirmMessage)) {
+      // 从购物车中删除商品
+      const updatedCartItems = cartItems.filter((_, i) => {
+        const itemIndex = cartItems.findIndex(item => 
+          item.productId === selectedItems[index].productId && 
+          item.specId === selectedItems[index].specId
+        )
+        return i !== itemIndex
+      })
+      
+      // 更新localStorage
+      localStorage.setItem("pickupCartItems", JSON.stringify(updatedCartItems))
+      setCartItems(updatedCartItems)
+    }
+  }
+
   const store = nearbyStores[0]
 
   if (selectedItems.length === 0) {
@@ -226,7 +251,14 @@ export default function CheckoutPage() {
                   )}
                 </div>
 
-                <div className="text-right">
+                <div className="flex flex-col items-end gap-2">
+                  <button 
+                    onClick={() => removeItem(index)} 
+                    className="p-1.5 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors"
+                    title={language === "en" ? "Remove item" : language === "ja" ? "削除" : "删除商品"}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                   <p className="font-medium text-sm text-gray-800">
                     {getPriceSymbol()}
                     {(item.price + item.selectedSides.reduce((sum, side) => sum + side.price, 0)) * item.quantity}

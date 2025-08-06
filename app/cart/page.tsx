@@ -86,7 +86,16 @@ export default function CartPage() {
   }
 
   const removeItem = (index: number) => {
-    setCartItems((items) => items.filter((_, i) => i !== index))
+    const itemName = getLocalizedText(cartItems[index], "productName")
+    const confirmMessage = language === "en" 
+      ? `Remove "${itemName}" from cart?`
+      : language === "ja" 
+        ? `「${itemName}」をカートから削除しますか？`
+        : `确定要删除"${itemName}"吗？`
+    
+    if (window.confirm(confirmMessage)) {
+      setCartItems((items) => items.filter((_, i) => i !== index))
+    }
   }
 
   const toggleItemSelection = (index: number) => {
@@ -246,7 +255,11 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                  <button onClick={() => removeItem(index)} className="text-gray-400 hover:text-red-600">
+                  <button 
+                    onClick={() => removeItem(index)} 
+                    className="p-1.5 rounded-full bg-red-50 hover:bg-red-100 text-red-500 hover:text-red-600 transition-colors"
+                    title={language === "en" ? "Remove item" : language === "ja" ? "削除" : "删除商品"}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </button>
 
