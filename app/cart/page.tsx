@@ -426,7 +426,7 @@ export default function CartPage() {
             size="lg"
             className="bg-red-600 hover:bg-red-700 rounded-full px-8 ml-4"
             disabled={selectedItems.length === 0}
-            onClick={handleCheckout}
+            onClick={() => router.push(`/checkout?orderType=${orderType}`)}
           >
             {t("checkout")} ({selectedItems.length})
           </Button>

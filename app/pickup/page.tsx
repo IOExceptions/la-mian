@@ -25,6 +25,7 @@ interface CartItem {
   price: number
   quantity: number
   image: string
+  selected: boolean
   selectedSides: Array<{
     id: string
     name: string
@@ -81,6 +82,7 @@ export default function PickupPage() {
       price: Number.parseFloat(language === "en" ? spec.priceEn : language === "ja" ? spec.priceJa : spec.price),
       quantity,
       image: product.image,
+      selected: true,
       selectedSides: selectedSides.map(side => ({
         id: side.id,
         name: side.name,
@@ -436,7 +438,7 @@ export default function PickupPage() {
 
       {/* Floating Cart Button */}
       {cartItems.length > 0 && (
-        <Link href="/cart?orderType=pickup">
+        <Link href="/checkout?orderType=pickup">
           <div className="fixed bottom-20 right-4 bg-red-600 text-white rounded-full p-4 shadow-lg hover:bg-red-700 transition-colors z-50">
             <div className="relative">
               <ShoppingCart className="w-6 h-6" />
