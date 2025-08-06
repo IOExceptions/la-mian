@@ -1,16 +1,16 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Star, ShoppingCart, Search, ChevronDown, Plus } from "lucide-react"
+import { Star, ShoppingCart, Search, Plus } from "lucide-react"
 import { MiniHeader } from "@/components/mini-header"
 import { BottomNav } from "@/components/bottom-nav"
-import { StickyDeliveryBar } from "@/components/sticky-delivery-bar"
+
 import { useLanguage } from "@/contexts/language-context"
-import { nearbyStores, products } from "@/lib/data" // Import products from lib/data
+import { products } from "@/lib/data" // Import products from lib/data
 
 const quickServices = [
   { key: "dessertStation", icon: "🍡", path: "/menu?category=desserts", color: "bg-pink-50" },
@@ -78,10 +78,6 @@ const todaySpecialProduct = {
 }
 
 export default function HomePage() {
-  const [selectedStore, setSelectedStore] = useState(nearbyStores[0])
-  const [showStoreSelector, setShowStoreSelector] = useState(false)
-  const [showStickyBar, setShowStickyBar] = useState(false)
-  const deliveryRef = useRef<HTMLDivElement>(null)
   const { t, language } = useLanguage()
   const router = useRouter()
 
@@ -127,69 +123,15 @@ export default function HomePage() {
     router.push("/pickup")
   }
 
-  // 监听滚动事件
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // 当到店取餐区域不在视口中时显示固定栏
-        setShowStickyBar(!entry.isIntersecting)
-      },
-      {
-        threshold: 0,
-        rootMargin: "-64px 0px 0px 0px", // 考虑MiniHeader的高度
-      },
-    )
 
-    if (deliveryRef.current) {
-      observer.observe(deliveryRef.current)
-    }
-
-    return () => {
-      if (deliveryRef.current) {
-        observer.unobserve(deliveryRef.current)
-      }
-    }
-  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <MiniHeader />
 
-      {/* Sticky Pickup Bar */}
-      <StickyDeliveryBar
-        selectedDelivery="pickup"
-        onDeliveryChange={() => {}}
-        isVisible={showStickyBar}
-      />
 
-      {/* Pickup Option */}
-      <div ref={deliveryRef} className="bg-white mx-4 my-4 rounded-xl overflow-hidden shadow-sm">
-        <Link href="/pickup" className="block">
-          <div className="relative overflow-hidden transition-all duration-300 hover:shadow-lg">
-            <div className="absolute inset-0">
-              <Image
-                src="/pickup-bg.png"
-                alt="到店取餐"
-                width={400}
-                height={128}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-green-600/80 to-green-500/60"></div>
-            </div>
-            <div className="relative z-10 h-32 flex flex-col items-center justify-center text-white">
-              <div className="text-3xl mb-2">🏪</div>
-              <h3 className="font-bold text-lg mb-1">{t("pickup")}</h3>
-              <p className="text-xs opacity-90">
-                {language === "en"
-                  ? "Pick up at restaurant"
-                  : language === "ja"
-                    ? "店舗でお受け取り"
-                    : "到店自取更快"}
-              </p>
-            </div>
-          </div>
-        </Link>
-      </div>
+
+
 
       {/* Search Bar */}
       <div className="bg-white px-4 py-3 border-b">
@@ -219,75 +161,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Store Location */}
-      <div className="bg-white px-4 py-4 border-b">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-              <MapPin className="w-4 h-4 text-red-600" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium text-gray-800 text-sm">{getLocalizedText(selectedStore, "name")}</h3>
-                <div className="flex items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full ${selectedStore.isOpen ? "bg-green-500" : "bg-red-500"}`}></div>
-                  <span className={`text-xs ${selectedStore.isOpen ? "text-green-600" : "text-red-600"}`}>
-                    {t(selectedStore.status)}
-                  </span>
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">{getLocalizedText(selectedStore, "address")}</p>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-xs text-gray-600">
-                  {t("distance")} {selectedStore.distance}
-                </span>
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowStoreSelector(!showStoreSelector)}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <ChevronDown className="w-4 h-4 text-gray-500" />
-          </button>
-        </div>
 
-        {/* Store Selector Dropdown */}
-        {showStoreSelector && (
-          <div className="mt-3 border-t pt-3 space-y-2">
-            {nearbyStores.map((store) => (
-              <button
-                key={store.id}
-                onClick={() => {
-                  setSelectedStore(store)
-                  setShowStoreSelector(false)
-                }}
-                className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                  selectedStore.id === store.id ? "border-red-600 bg-red-50" : "border-gray-200 hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium text-sm text-gray-800">{getLocalizedText(store, "name")}</h4>
-                      <div className="flex items-center gap-1">
-                        <div className={`w-2 h-2 rounded-full ${store.isOpen ? "bg-green-500" : "bg-red-500"}`}></div>
-                        <span className={`text-xs ${store.isOpen ? "text-green-600" : "text-red-600"}`}>
-                          {t(store.status)}
-                        </span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">{getLocalizedText(store, "address")}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-600">{store.distance}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
 
       {/* New Products Section - 新品上市 */}
       {newProducts.length > 0 && (
