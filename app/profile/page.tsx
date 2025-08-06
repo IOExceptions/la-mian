@@ -44,54 +44,6 @@ export default function ProfilePage() {
       description: t("personalInfoDesc"),
       href: "/profile/info",
     },
-    {
-      icon: Heart,
-      label: t("myFavorites"),
-      description: t("myFavoritesDesc"),
-      href: "/profile/favorites",
-    },
-    {
-      icon: MapPin,
-      label: t("addresses"),
-      description: t("addressesDesc"),
-      href: "/profile/addresses",
-    },
-    {
-      icon: Gift,
-      label: t("coupons"),
-      description: t("couponsDesc"),
-      href: "/coupons",
-    },
-    {
-      icon: ShoppingBag,
-      label: t("pointsMall"),
-      description: t("pointsMallDesc"),
-      href: "/mall",
-    },
-    {
-      icon: Settings,
-      label: t("accountSettings"),
-      description: t("settingsDesc"),
-      href: "/profile/settings",
-    },
-    {
-      icon: Bell,
-      label: t("notifications"),
-      description: t("notificationsDesc"),
-      href: "/profile/notifications",
-    },
-    {
-      icon: HelpCircle,
-      label: t("helpCenter"),
-      description: t("helpCenterDesc"),
-      href: "/profile/help",
-    },
-    {
-      icon: Info,
-      label: t("aboutUs"),
-      description: t("aboutUsDesc"),
-      href: "/profile/about",
-    },
   ]
 
   const getUserName = () => {
