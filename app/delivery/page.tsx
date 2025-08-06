@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, MapPin, Clock, Star, Search, Truck, ShoppingCart, TrendingUp } from "lucide-react"
+import { ArrowLeft, MapPin, Clock, Star, Search, Truck, ShoppingCart, TrendingUp } from 'lucide-react'
 import { BottomNav } from "@/components/bottom-nav"
 import { StickyAddressBar } from "@/components/sticky-address-bar"
 import { ProductSpecModal } from "@/components/product-spec-modal"
@@ -22,11 +22,16 @@ interface CartItem {
   specName: string
   specNameEn: string
   specNameJa: string
-  price: string
-  priceEn: string
-  priceJa: string
+  price: number
   quantity: number
   image: string
+  selectedSides: Array<{
+    id: string
+    name: string
+    nameEn: string
+    nameJa: string
+    price: number
+  }>
 }
 
 export default function DeliveryPage() {
@@ -71,7 +76,7 @@ export default function DeliveryPage() {
     setShowSpecModal(true)
   }
 
-  const handleAddToCart = (product: any, spec: any, quantity: number) => {
+  const handleAddToCart = (product: any, spec: any, quantity: number, selectedSides: any[]) => {
     const cartItem: CartItem = {
       productId: product.id,
       productName: product.name,
@@ -81,15 +86,24 @@ export default function DeliveryPage() {
       specName: spec.name,
       specNameEn: spec.nameEn,
       specNameJa: spec.nameJa,
-      price: spec.price,
-      priceEn: product.language === "en" ? spec.priceEn : spec.price,
-      priceJa: product.language === "ja" ? spec.priceJa : spec.price,
+      price: Number.parseFloat(language === "en" ? spec.priceEn : language === "ja" ? spec.priceJa : spec.price),
       quantity,
       image: product.image,
+      selectedSides: selectedSides.map(side => ({
+        id: side.id,
+        name: side.name,
+        nameEn: side.nameEn,
+        nameJa: side.nameJa,
+        price: Number.parseFloat(language === "en" ? side.priceEn : language === "ja" ? side.priceJa : side.price)
+      }))
     }
 
     setCartItems((prev) => {
-      const existingIndex = prev.findIndex((item) => item.productId === product.id && item.specId === spec.id)
+      const existingIndex = prev.findIndex((item) => 
+        item.productId === product.id && 
+        item.specId === spec.id &&
+        JSON.stringify(item.selectedSides) === JSON.stringify(cartItem.selectedSides)
+      )
 
       if (existingIndex >= 0) {
         const updated = [...prev]
@@ -107,10 +121,32 @@ export default function DeliveryPage() {
 
   const getTotalCartPrice = () => {
     return cartItems.reduce((total, item) => {
-      const price = Number.parseFloat(language === "en" ? item.priceEn : language === "ja" ? item.priceJa : item.price)
-      return total + price * item.quantity
+      const itemTotal = item.price * item.quantity
+      const sidesTotal = item.selectedSides.reduce((sideSum, side) => sideSum + side.price, 0) * item.quantity
+      return total + itemTotal + sidesTotal
     }, 0)
   }
+
+  // 从 localStorage 加载购物车数据
+  useEffect(() => {
+    const savedItems = localStorage.getItem("deliveryCartItems")
+    if (savedItems) {
+      try {
+        const items = JSON.parse(savedItems)
+        setCartItems(items)
+      } catch (error) {
+        console.error("Error loading delivery cart items:", error)
+        setCartItems([])
+      }
+    }
+  }, [])
+
+  // 保存购物车数据到 localStorage
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem("deliveryCartItems", JSON.stringify(cartItems))
+    }
+  }, [cartItems])
 
   // 监听滚动事件
   useEffect(() => {

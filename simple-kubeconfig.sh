@@ -50,4 +50,4 @@ else
     echo "🔍 尝试使用原始 kubeconfig..."
     export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
     kubectl cluster-info
-fi 
+fi

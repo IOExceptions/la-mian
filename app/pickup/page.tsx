@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Clock, Star, Search, Store, ShoppingCart, TrendingUp, ChevronDown } from "lucide-react"
+import { ArrowLeft, Clock, Star, Search, Store, ShoppingCart, TrendingUp, ChevronDown } from 'lucide-react'
 import { BottomNav } from "@/components/bottom-nav"
 import { StickyPickupBar } from "@/components/sticky-pickup-bar"
 import { ProductSpecModal } from "@/components/product-spec-modal"
@@ -22,11 +22,16 @@ interface CartItem {
   specName: string
   specNameEn: string
   specNameJa: string
-  price: string
-  priceEn: string
-  priceJa: string
+  price: number
   quantity: number
   image: string
+  selectedSides: Array<{
+    id: string
+    name: string
+    nameEn: string
+    nameJa: string
+    price: number
+  }>
 }
 
 export default function PickupPage() {
@@ -63,7 +68,7 @@ export default function PickupPage() {
     setShowSpecModal(true)
   }
 
-  const handleAddToCart = (product: any, spec: any, quantity: number) => {
+  const handleAddToCart = (product: any, spec: any, quantity: number, selectedSides: any[]) => {
     const cartItem: CartItem = {
       productId: product.id,
       productName: product.name,
@@ -73,15 +78,24 @@ export default function PickupPage() {
       specName: spec.name,
       specNameEn: spec.nameEn,
       specNameJa: spec.nameJa,
-      price: spec.price,
-      priceEn: spec.priceEn,
-      priceJa: spec.priceJa,
+      price: Number.parseFloat(language === "en" ? spec.priceEn : language === "ja" ? spec.priceJa : spec.price),
       quantity,
       image: product.image,
+      selectedSides: selectedSides.map(side => ({
+        id: side.id,
+        name: side.name,
+        nameEn: side.nameEn,
+        nameJa: side.nameJa,
+        price: Number.parseFloat(language === "en" ? side.priceEn : language === "ja" ? side.priceJa : side.price)
+      }))
     }
 
     setCartItems((prev) => {
-      const existingIndex = prev.findIndex((item) => item.productId === product.id && item.specId === spec.id)
+      const existingIndex = prev.findIndex((item) => 
+        item.productId === product.id && 
+        item.specId === spec.id &&
+        JSON.stringify(item.selectedSides) === JSON.stringify(cartItem.selectedSides)
+      )
 
       if (existingIndex >= 0) {
         const updated = [...prev]
@@ -99,10 +113,32 @@ export default function PickupPage() {
 
   const getTotalCartPrice = () => {
     return cartItems.reduce((total, item) => {
-      const price = Number.parseFloat(language === "en" ? item.priceEn : item.price)
-      return total + price * item.quantity
+      const itemTotal = item.price * item.quantity
+      const sidesTotal = item.selectedSides.reduce((sideSum, side) => sideSum + side.price, 0) * item.quantity
+      return total + itemTotal + sidesTotal
     }, 0)
   }
+
+  // 从 localStorage 加载购物车数据
+  useEffect(() => {
+    const savedItems = localStorage.getItem("pickupCartItems")
+    if (savedItems) {
+      try {
+        const items = JSON.parse(savedItems)
+        setCartItems(items)
+      } catch (error) {
+        console.error("Error loading pickup cart items:", error)
+        setCartItems([])
+      }
+    }
+  }, [])
+
+  // 保存购物车数据到 localStorage
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem("pickupCartItems", JSON.stringify(cartItems))
+    }
+  }, [cartItems])
 
   // 处理从首页传来的商品
   useEffect(() => {
@@ -111,14 +147,9 @@ export default function PickupPage() {
       try {
         const product = JSON.parse(pendingProduct)
         if (product.addToCartFromHome) {
-          // 清除 localStorage 中的待处理商品
           localStorage.removeItem("pendingProduct")
-
-          // 自动打开规格选择弹窗
           setSelectedProduct(product)
           setShowSpecModal(true)
-
-          // 可选：显示提示信息
           setTimeout(() => {
             const message =
               language === "en"
@@ -126,8 +157,6 @@ export default function PickupPage() {
                 : language === "ja"
                   ? "ホームページからの商品のオプションを選択してください"
                   : "请为首页商品选择规格"
-
-            // 这里可以添加一个 toast 通知
             console.log(message)
           }, 500)
         }
@@ -430,7 +459,6 @@ export default function PickupPage() {
         isOpen={showSpecModal}
         onClose={() => {
           setShowSpecModal(false)
-          // 清除来自首页的标记
           if (selectedProduct?.addToCartFromHome) {
             setSelectedProduct(null)
           }

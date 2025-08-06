@@ -2,13 +2,13 @@
 
 import { CardContent } from "@/components/ui/card"
 import { Card } from "@/components/ui/card"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Plus, Minus, Trash2, ShoppingBag, Tag } from "lucide-react"
+import { Plus, Minus, Trash2, ShoppingBag, Tag } from 'lucide-react'
 import { MiniHeader } from "@/components/mini-header"
 import { BottomNav } from "@/components/bottom-nav"
 import { useLanguage } from "@/contexts/language-context"
@@ -17,85 +17,57 @@ import { nearbyStores } from "@/lib/data"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 interface CartItem {
-  id: number
-  name: string
+  productId: number
+  productName: string
+  productNameEn: string
+  productNameJa: string
+  specId: string
+  specName: string
+  specNameEn: string
+  specNameJa: string
   price: number
   quantity: number
   image: string
   selected: boolean
+  selectedSides: Array<{
+    id: string
+    name: string
+    nameEn: string
+    nameJa: string
+    price: number
+  }>
 }
 
 export default function CartPage() {
   const { t, language } = useLanguage()
   const searchParams = useSearchParams()
   const router = useRouter()
-  const orderType = searchParams.get("orderType") || "delivery" // 'delivery' or 'pickup'
+  const orderType = searchParams.get("orderType") || "delivery"
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "特制豚骨拉面",
-      price: 45.0,
-      quantity: 1,
-      image: "/tonkotsu-ramen-special.png",
-      selected: true,
-    },
-    {
-      id: 2,
-      name: "味噌拉面",
-      price: 42.0,
-      quantity: 1,
-      image: "/miso-ramen.png",
-      selected: true,
-    },
-    {
-      id: 3,
-      name: "煎饺",
-      price: 18.0,
-      quantity: 2,
-      image: "/gyoza.png",
-      selected: false,
-    },
-  ])
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null)
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false)
 
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity < 1) return
-    setCartItems((items) => items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)))
-  }
-
-  const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id))
-  }
-
-  const toggleItemSelection = (id: number) => {
-    setCartItems((items) => items.map((item) => (item.id === id ? { ...item, selected: !item.selected } : item)))
-  }
-
-  const toggleSelectAll = () => {
-    const allSelected = cartItems.every((item) => item.selected)
-    setCartItems((items) => items.map((item) => ({ ...item, selected: !allSelected })))
-  }
-
-  const selectedItems = cartItems.filter((item) => item.selected)
-  const subtotal = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-
-  const deliveryFee = orderType === "delivery" && subtotal < 30 ? 6 : 0 // Only delivery has fee
-  const freeDeliveryThreshold = 30
-
-  let couponDiscount = 0
-  if (selectedCoupon) {
-    if (selectedCoupon.type === "fixed") {
-      couponDiscount = selectedCoupon.value
-    } else if (selectedCoupon.type === "percentage") {
-      couponDiscount = subtotal * selectedCoupon.value
+  // 从 localStorage 加载购物车数据
+  useEffect(() => {
+    const storageKey = orderType === "pickup" ? "pickupCartItems" : "deliveryCartItems"
+    const savedItems = localStorage.getItem(storageKey)
+    if (savedItems) {
+      try {
+        const items = JSON.parse(savedItems)
+        setCartItems(items.map((item: any) => ({ ...item, selected: true })))
+      } catch (error) {
+        console.error("Error loading cart items:", error)
+        setCartItems([])
+      }
     }
-    // Ensure discount doesn't exceed subtotal
-    couponDiscount = Math.min(couponDiscount, subtotal)
-  }
+  }, [orderType])
 
-  const total = subtotal + deliveryFee - couponDiscount
+  // 保存购物车数据到 localStorage
+  useEffect(() => {
+    const storageKey = orderType === "pickup" ? "pickupCartItems" : "deliveryCartItems"
+    localStorage.setItem(storageKey, JSON.stringify(cartItems))
+  }, [cartItems, orderType])
 
   const getLocalizedText = (item: any, field: string) => {
     if (language === "en") return item[`${field}En`] || item[field]
@@ -107,6 +79,46 @@ export default function CartPage() {
     if (language === "en") return "$"
     return "¥"
   }
+
+  const updateQuantity = (index: number, newQuantity: number) => {
+    if (newQuantity < 1) return
+    setCartItems((items) => items.map((item, i) => (i === index ? { ...item, quantity: newQuantity } : item)))
+  }
+
+  const removeItem = (index: number) => {
+    setCartItems((items) => items.filter((_, i) => i !== index))
+  }
+
+  const toggleItemSelection = (index: number) => {
+    setCartItems((items) => items.map((item, i) => (i === index ? { ...item, selected: !item.selected } : item)))
+  }
+
+  const toggleSelectAll = () => {
+    const allSelected = cartItems.every((item) => item.selected)
+    setCartItems((items) => items.map((item) => ({ ...item, selected: !allSelected })))
+  }
+
+  const selectedItems = cartItems.filter((item) => item.selected)
+  const subtotal = selectedItems.reduce((sum, item) => {
+    const itemTotal = item.price * item.quantity
+    const sidesTotal = item.selectedSides.reduce((sideSum, side) => sideSum + side.price, 0) * item.quantity
+    return sum + itemTotal + sidesTotal
+  }, 0)
+
+  const deliveryFee = orderType === "delivery" && subtotal < 30 ? 6 : 0
+  const freeDeliveryThreshold = 30
+
+  let couponDiscount = 0
+  if (selectedCoupon) {
+    if (selectedCoupon.type === "fixed") {
+      couponDiscount = selectedCoupon.value
+    } else if (selectedCoupon.type === "percentage") {
+      couponDiscount = subtotal * selectedCoupon.value
+    }
+    couponDiscount = Math.min(couponDiscount, subtotal)
+  }
+
+  const total = subtotal + deliveryFee - couponDiscount
 
   const handleCouponSelect = (coupon: Coupon) => {
     const today = new Date()
@@ -134,7 +146,6 @@ export default function CartPage() {
   }
 
   const handleCheckout = () => {
-    // 创建订单数据
     const orderData = {
       items: selectedItems,
       subtotal,
@@ -145,10 +156,7 @@ export default function CartPage() {
       coupon: selectedCoupon,
     }
 
-    // 将订单数据存储到 localStorage 或状态管理中
     localStorage.setItem("currentOrder", JSON.stringify(orderData))
-
-    // 跳转到订单确认页面
     router.push(`/order-confirmation?orderType=${orderType}`)
   }
 
@@ -171,7 +179,7 @@ export default function CartPage() {
                 ? "お気に入りのラーメンを選びに行こう！"
                 : "快去选择您喜欢的拉面吧！"}
           </p>
-          <Link href="/delivery">
+          <Link href={orderType === "pickup" ? "/pickup" : "/delivery"}>
             <Button className="bg-red-600 hover:bg-red-700 rounded-full px-8">{t("goToOrder")}</Button>
           </Link>
         </div>
@@ -198,15 +206,15 @@ export default function CartPage() {
 
         {/* Cart Items */}
         <div className="space-y-3">
-          {cartItems.map((item) => (
-            <div key={item.id} className="bg-white rounded-xl p-4">
+          {cartItems.map((item, index) => (
+            <div key={`${item.productId}-${item.specId}-${index}`} className="bg-white rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <Checkbox checked={item.selected} onCheckedChange={() => toggleItemSelection(item.id)} />
+                <Checkbox checked={item.selected} onCheckedChange={() => toggleItemSelection(index)} />
 
                 <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
                   <Image
                     src={item.image || "/placeholder.svg"}
-                    alt={item.name}
+                    alt={getLocalizedText(item, "productName")}
                     width={64}
                     height={64}
                     className="w-full h-full object-cover"
@@ -214,21 +222,37 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-sm text-gray-800 mb-1 line-clamp-1">{item.name}</h3>
+                  <h3 className="font-medium text-sm text-gray-800 mb-1 line-clamp-1">
+                    {getLocalizedText(item, "productName")}
+                  </h3>
+                  <p className="text-xs text-gray-500 mb-1">
+                    {getLocalizedText(item, "specName")}
+                  </p>
+                  {item.selectedSides && item.selectedSides.length > 0 && (
+                    <div className="text-xs text-gray-500 mb-1">
+                      {language === "en" ? "Sides: " : language === "ja" ? "サイド: " : "配菜: "}
+                      {item.selectedSides.map((side, sideIndex) => (
+                        <span key={side.id}>
+                          {getLocalizedText(side, "name")}
+                          {sideIndex < item.selectedSides.length - 1 ? ", " : ""}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <p className="text-red-600 font-bold">
                     {getPriceSymbol()}
-                    {item.price}
+                    {(item.price + item.selectedSides.reduce((sum, side) => sum + side.price, 0)).toFixed(language === "en" ? 2 : 0)}
                   </p>
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                  <button onClick={() => removeItem(item.id)} className="text-gray-400 hover:text-red-600">
+                  <button onClick={() => removeItem(index)} className="text-gray-400 hover:text-red-600">
                     <Trash2 className="w-4 h-4" />
                   </button>
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      onClick={() => updateQuantity(index, item.quantity - 1)}
                       disabled={item.quantity <= 1}
                       className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center disabled:opacity-50"
                     >
@@ -236,7 +260,7 @@ export default function CartPage() {
                     </button>
                     <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      onClick={() => updateQuantity(index, item.quantity + 1)}
                       className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center"
                     >
                       <Plus className="w-3 h-3" />
@@ -357,51 +381,56 @@ export default function CartPage() {
         </Link>
       </div>
 
-      {/* Fixed Bottom Checkout */}
+      {/* Fixed Bottom Checkout - 新的单行布局 */}
       <div className="fixed bottom-16 left-0 right-0 bg-white border-t px-4 py-3 z-40">
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-sm text-gray-600">
-            <div>
-              {t("subtotal")}: {getPriceSymbol()}
-              {subtotal.toFixed(language === "en" ? 2 : 0)}
-            </div>
-            {orderType === "delivery" && (
-              <div>
-                {t("deliveryFee")}:{" "}
-                {deliveryFee === 0 ? t("free") : `${getPriceSymbol()}${deliveryFee.toFixed(language === "en" ? 2 : 0)}`}
-              </div>
-            )}
-            {selectedCoupon && (
-              <div className="text-red-600">
-                {t("couponDiscount")}: -{getPriceSymbol()}
-                {couponDiscount.toFixed(language === "en" ? 2 : 0)}
-              </div>
+        {/* 免费配送提示 */}
+        {orderType === "delivery" && deliveryFee > 0 && (
+          <div className="text-xs text-gray-500 text-center mb-2">
+            {t("buyMoreForFreeDelivery").replace(
+              "{amount}",
+              `${getPriceSymbol()}${(freeDeliveryThreshold - subtotal).toFixed(language === "en" ? 2 : 0)}`,
             )}
           </div>
-          <div className="text-right">
-            <div className="text-lg font-bold text-red-600">
-              {getPriceSymbol()}
+        )}
+        
+        {/* 单行布局：价格信息 + 结算按钮 */}
+        <div className="flex items-center justify-between">
+          {/* 左侧价格信息 */}
+          <div className="flex-1">
+            <div className="flex items-center gap-4 text-sm text-gray-600">
+              <span>
+                {t("subtotal")}: {getPriceSymbol()}
+                {subtotal.toFixed(language === "en" ? 2 : 0)}
+              </span>
+              {orderType === "delivery" && (
+                <span>
+                  {t("deliveryFee")}:{" "}
+                  {deliveryFee === 0 ? t("free") : `${getPriceSymbol()}${deliveryFee.toFixed(language === "en" ? 2 : 0)}`}
+                </span>
+              )}
+              {selectedCoupon && (
+                <span className="text-red-600">
+                  {t("couponDiscount")}: -{getPriceSymbol()}
+                  {couponDiscount.toFixed(language === "en" ? 2 : 0)}
+                </span>
+              )}
+            </div>
+            <div className="text-lg font-bold text-red-600 mt-1">
+              {t("total")}: {getPriceSymbol()}
               {total.toFixed(language === "en" ? 2 : 0)}
             </div>
-            {orderType === "delivery" && deliveryFee > 0 && (
-              <div className="text-xs text-gray-500">
-                {t("buyMoreForFreeDelivery").replace(
-                  "{amount}",
-                  `${getPriceSymbol()}${(freeDeliveryThreshold - subtotal).toFixed(language === "en" ? 2 : 0)}`,
-                )}
-              </div>
-            )}
           </div>
-        </div>
 
-        <Button
-          size="lg"
-          className="w-full bg-red-600 hover:bg-red-700 rounded-full"
-          disabled={selectedItems.length === 0}
-          onClick={handleCheckout}
-        >
-          {t("checkout")} ({selectedItems.length})
-        </Button>
+          {/* 右侧结算按钮 */}
+          <Button
+            size="lg"
+            className="bg-red-600 hover:bg-red-700 rounded-full px-8 ml-4"
+            disabled={selectedItems.length === 0}
+            onClick={handleCheckout}
+          >
+            {t("checkout")} ({selectedItems.length})
+          </Button>
+        </div>
       </div>
 
       <BottomNav />

@@ -10,6 +10,7 @@ export const translations = {
   zh: {
     // Navigation
     home: "首页",
+    order: "点餐",
     rewards: "奖励计划",
     memberCard: "会员卡",
     mall: "商城",
@@ -161,6 +162,7 @@ export const translations = {
   en: {
     // Navigation
     home: "Home",
+    order: "Order",
     rewards: "Rewards",
     memberCard: "Member Card",
     mall: "Mall",
@@ -312,6 +314,7 @@ export const translations = {
   ja: {
     // Navigation
     home: "ホーム",
+    order: "注文",
     rewards: "リワード",
     memberCard: "メンバーカード",
     mall: "モール",

@@ -130,4 +130,4 @@ else
     echo "❌ 连接测试失败"
     echo "🔍 调试信息:"
     kubectl cluster-info dump
-fi 
+fi

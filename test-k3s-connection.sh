@@ -61,4 +61,4 @@ else
     echo "kubectl config view"
     echo "kubectl cluster-info --insecure-skip-tls-verify"
     exit 1
-fi 
+fi
