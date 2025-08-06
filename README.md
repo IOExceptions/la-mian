@@ -6,7 +6,7 @@
 
 ### 本地开发
 
-```bash
+\`\`\`bash
 # 安装依赖
 npm install --legacy-peer-deps
 
@@ -18,26 +18,26 @@ npm run build
 
 # 启动生产服务器
 npm start
-```
+\`\`\`
 
 ### 容器化部署
 
 #### 本地构建和部署
 
-```bash
+\`\`\`bash
 # 构建 Docker 镜像
 docker build -t la-mian:latest .
 
 # 运行容器
 docker run -p 3000:3000 la-mian:latest
-```
+\`\`\`
 
 #### K3s 部署
 
-```bash
+\`\`\`bash
 # 初始设置
 ./k8s-setup.sh
-```
+\`\`\`
 
 ## 🔄 自动化部署
 
@@ -104,7 +104,7 @@ docker run -p 3000:3000 la-mian:latest
 
 ## 📁 项目结构
 
-```
+\`\`\`
 la-mian/
 ├── app/                    # Next.js App Router 页面
 ├── components/             # React 组件
@@ -114,7 +114,7 @@ la-mian/
 ├── k8s-deployment.yaml     # Kubernetes 部署配置
 ├── Dockerfile              # Docker 镜像配置
 └── README.md              # 项目说明
-```
+\`\`\`
 
 ## 🛠️ 技术栈
 
@@ -155,29 +155,29 @@ la-mian/
 ### 常见问题
 
 1. **构建失败**
-   ```bash
+   \`\`\`bash
    # 清理缓存
    npm run build -- --no-cache
-   ```
+   \`\`\`
 
 2. **容器启动失败**
-   ```bash
+   \`\`\`bash
    # 查看容器日志
    docker logs <container-id>
-   ```
+   \`\`\`
 
 3. **Kubernetes 部署失败**
-   ```bash
+   \`\`\`bash
    # 查看 Pod 状态
    kubectl describe pod <pod-name> -n la-mian
    
    # 查看日志
    kubectl logs <pod-name> -n la-mian
-   ```
+   \`\`\`
 
 ### 监控和维护
 
-```bash
+\`\`\`bash
 # 查看部署状态
 kubectl get pods -n la-mian
 
@@ -189,7 +189,7 @@ kubectl get ingress -n la-mian
 
 # 查看日志
 kubectl logs -f deployment/la-mian-app -n la-mian
-```
+\`\`\`
 
 ## 📝 开发指南
 

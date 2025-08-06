@@ -33,4 +33,4 @@ kubectl get ingress -n la-mian --insecure-skip-tls-verify
 
 echo ""
 echo "📊 检查事件..."
-kubectl get events -n la-mian --insecure-skip-tls-verify --sort-by='.lastTimestamp' 
+kubectl get events -n la-mian --insecure-skip-tls-verify --sort-by='.lastTimestamp'

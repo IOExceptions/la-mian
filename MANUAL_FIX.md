@@ -11,17 +11,17 @@ base64 编码错误通常是由于：
 
 ### 步骤 1: 检查 K3s 状态
 
-```bash
+\`\`\`bash
 # 检查 K3s 服务状态
 sudo systemctl status k3s
 
 # 检查 kubeconfig 文件
 sudo ls -la /etc/rancher/k3s/k3s.yaml
-```
+\`\`\`
 
 ### 步骤 2: 重新生成 kubeconfig
 
-```bash
+\`\`\`bash
 # 备份原始文件
 sudo cp /etc/rancher/k3s/k3s.yaml /etc/rancher/k3s/k3s.yaml.backup
 
@@ -31,11 +31,11 @@ sleep 10
 
 # 检查新生成的 kubeconfig
 sudo cat /etc/rancher/k3s/k3s.yaml
-```
+\`\`\`
 
 ### 步骤 3: 手动创建正确的 kubeconfig
 
-```bash
+\`\`\`bash
 # 获取服务器 IP
 SERVER_IP=$(ip addr show | grep "inet " | grep -v 127.0.0.1 | head -n1 | awk '{print $2}' | cut -d'/' -f1)
 echo "服务器 IP: $SERVER_IP"
@@ -48,11 +48,11 @@ sed -i "s|server: https://127.0.0.1:6443|server: https://$SERVER_IP:6443|g" kube
 
 # 添加跳过 TLS 验证
 sed -i '/server:/a\    insecure-skip-tls-verify: true' kubeconfig-fixed.yaml
-```
+\`\`\`
 
 ### 步骤 4: 测试连接
 
-```bash
+\`\`\`bash
 # 测试 kubeconfig
 export KUBECONFIG=kubeconfig-fixed.yaml
 kubectl config view
@@ -62,13 +62,13 @@ kubectl cluster-info
 
 # 如果成功，获取 base64 编码
 cat kubeconfig-fixed.yaml | base64 -w 0
-```
+\`\`\`
 
 ## 🔧 备选方案
 
 ### 方案 1: 使用 Token 认证
 
-```bash
+\`\`\`bash
 # 获取 Token
 TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token)
 
@@ -96,13 +96,13 @@ EOF
 # 测试连接
 export KUBECONFIG=kubeconfig-token.yaml
 kubectl cluster-info
-```
+\`\`\`
 
 ### 方案 2: 重新安装 K3s
 
 如果问题持续，可以重新安装 K3s：
 
-```bash
+\`\`\`bash
 # 卸载 K3s
 /usr/local/bin/k3s-uninstall.sh
 
@@ -118,24 +118,24 @@ sleep 30
 
 # 获取新的 kubeconfig
 sudo cat /etc/rancher/k3s/k3s.yaml
-```
+\`\`\`
 
 ## 📋 验证步骤
 
 ### 1. 检查 kubeconfig 格式
 
-```bash
+\`\`\`bash
 # 验证 YAML 格式
 kubectl config view --kubeconfig=kubeconfig-fixed.yaml
 
 # 检查证书数据
 grep -A1 "client-certificate-data:" kubeconfig-fixed.yaml
 grep -A1 "client-key-data:" kubeconfig-fixed.yaml
-```
+\`\`\`
 
 ### 2. 测试连接
 
-```bash
+\`\`\`bash
 # 测试集群连接
 kubectl cluster-info --kubeconfig=kubeconfig-fixed.yaml
 
@@ -144,33 +144,33 @@ kubectl get nodes --kubeconfig=kubeconfig-fixed.yaml
 
 # 测试命名空间
 kubectl get namespaces --kubeconfig=kubeconfig-fixed.yaml
-```
+\`\`\`
 
 ### 3. 获取 GitHub Secrets 内容
 
-```bash
+\`\`\`bash
 # 获取 base64 编码
 cat kubeconfig-fixed.yaml | base64 -w 0
-```
+\`\`\`
 
 ## 🚨 常见问题
 
 ### 问题 1: base64 编码错误
-```
+\`\`\`
 illegal base64 data at input byte 6
-```
+\`\`\`
 **解决方案**: 重新生成 kubeconfig 文件
 
 ### 问题 2: 证书数据缺失
-```
+\`\`\`
 client-certificate-data: ""
-```
+\`\`\`
 **解决方案**: 重启 K3s 服务
 
 ### 问题 3: 权限问题
-```
+\`\`\`
 permission denied
-```
+\`\`\`
 **解决方案**: 使用 sudo 运行命令
 
 ## 📞 支持
@@ -179,4 +179,4 @@ permission denied
 
 1. 检查 K3s 日志：`sudo journalctl -u k3s`
 2. 验证网络连接：`curl -k https://localhost:6443/healthz`
-3. 检查证书文件：`sudo ls -la /var/lib/rancher/k3s/server/tls/` 
+3. 检查证书文件：`sudo ls -la /var/lib/rancher/k3s/server/tls/`
