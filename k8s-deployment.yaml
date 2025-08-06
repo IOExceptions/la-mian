@@ -19,6 +19,7 @@ spec:
       containers:
       - name: la-mian
         image: ghcr.io/ioexceptions/la-mian:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
         env:

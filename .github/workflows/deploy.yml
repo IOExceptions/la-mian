@@ -133,13 +133,20 @@ jobs:
         # 创建命名空间（如果不存在）
         kubectl create namespace la-mian --dry-run=client -o yaml | kubectl apply -f - --insecure-skip-tls-verify
         
+        # 生成唯一的镜像标签
+        IMAGE_TAG="main-$(echo ${{ github.sha }} | cut -c1-8)"
+        IMAGE_WITH_TAG="ghcr.io/ioexceptions/la-mian:${IMAGE_TAG}"
+        
+        echo "🏷️ 使用镜像标签: ${IMAGE_WITH_TAG}"
+        
         # 检查部署是否存在
         if kubectl get deployment la-mian-app -n la-mian --insecure-skip-tls-verify 2>/dev/null; then
           echo "📦 更新现有部署..."
-          kubectl set image deployment/la-mian-app la-mian=ghcr.io/ioexceptions/la-mian:latest -n la-mian --insecure-skip-tls-verify
+          kubectl set image deployment/la-mian-app la-mian=${IMAGE_WITH_TAG} -n la-mian --insecure-skip-tls-verify
         else
           echo "📦 创建新部署..."
-          kubectl apply -f k8s-deployment.yaml --insecure-skip-tls-verify
+          # 临时更新deployment文件中的镜像标签
+          sed "s|ghcr.io/ioexceptions/la-mian:latest|${IMAGE_WITH_TAG}|g" k8s-deployment.yaml | kubectl apply -f - --insecure-skip-tls-verify
         fi
         
         # 等待部署完成
