@@ -78,7 +78,6 @@ const todaySpecialProduct = {
 }
 
 export default function HomePage() {
-  const [selectedDelivery, setSelectedDelivery] = useState("delivery")
   const [selectedStore, setSelectedStore] = useState(nearbyStores[0])
   const [showStoreSelector, setShowStoreSelector] = useState(false)
   const [showStickyBar, setShowStickyBar] = useState(false)
@@ -132,7 +131,7 @@ export default function HomePage() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // 当外卖送和到店取餐区域不在视口中时显示固定栏
+        // 当到店取餐区域不在视口中时显示固定栏
         setShowStickyBar(!entry.isIntersecting)
       },
       {
@@ -156,100 +155,40 @@ export default function HomePage() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <MiniHeader />
 
-      {/* Sticky Delivery Bar */}
+      {/* Sticky Pickup Bar */}
       <StickyDeliveryBar
-        selectedDelivery={selectedDelivery}
-        onDeliveryChange={setSelectedDelivery}
+        selectedDelivery="pickup"
+        onDeliveryChange={() => {}}
         isVisible={showStickyBar}
       />
 
-      {/* Delivery Options */}
+      {/* Pickup Option */}
       <div ref={deliveryRef} className="bg-white mx-4 my-4 rounded-xl overflow-hidden shadow-sm">
-        <div className="flex h-32">
-          {/* 外卖送 */}
-          <Link href="/delivery" className="flex-1">
-            <button
-              onClick={() => setSelectedDelivery("delivery")}
-              className={`w-full h-full relative overflow-hidden transition-all duration-300 ${
-                selectedDelivery === "delivery" ? "ring-2 ring-red-600" : ""
-              }`}
-            >
-              <div className="absolute inset-0">
-                <Image
-                  src="/delivery-bg.png"
-                  alt="外卖配送"
-                  width={200}
-                  height={128}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/80 to-blue-500/60"></div>
-              </div>
-              <div className="relative z-10 h-full flex flex-col items-center justify-center text-white">
-                <div className="text-3xl mb-2">🚚</div>
-                <h3 className="font-bold text-lg mb-1">{t("delivery")}</h3>
-                <p className="text-xs opacity-90">
-                  {language === "en"
-                    ? "Fast delivery to your door"
-                    : language === "ja"
-                      ? "お家まで配達"
-                      : "快速送达到家"}
-                </p>
-                {selectedDelivery === "delivery" && (
-                  <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                  </div>
-                )}
-              </div>
-            </button>
-          </Link>
-
-          {/* 分割线 */}
-          <div className="w-px bg-gray-200 relative">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full border-2 border-gray-200 flex items-center justify-center">
-              <div className="text-gray-400 text-sm">VS</div>
+        <Link href="/pickup" className="block">
+          <div className="relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+            <div className="absolute inset-0">
+              <Image
+                src="/pickup-bg.png"
+                alt="到店取餐"
+                width={400}
+                height={128}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-green-600/80 to-green-500/60"></div>
+            </div>
+            <div className="relative z-10 h-32 flex flex-col items-center justify-center text-white">
+              <div className="text-3xl mb-2">🏪</div>
+              <h3 className="font-bold text-lg mb-1">{t("pickup")}</h3>
+              <p className="text-xs opacity-90">
+                {language === "en"
+                  ? "Pick up at restaurant"
+                  : language === "ja"
+                    ? "店舗でお受け取り"
+                    : "到店自取更快"}
+              </p>
             </div>
           </div>
-
-          {/* 到店取餐 */}
-          <Link
-            href="/pickup"
-            className={`flex-1 relative overflow-hidden transition-all duration-300 ${
-              selectedDelivery === "pickup" ? "ring-2 ring-red-600" : ""
-            }`}
-          >
-            <button
-              onClick={() => setSelectedDelivery("pickup")}
-              className="w-full h-full" // 移除 flex-1 和 ring 样式，只保留尺寸
-            >
-              <div className="absolute inset-0">
-                <Image
-                  src="/pickup-bg.png"
-                  alt="到店取餐"
-                  width={200}
-                  height={128}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-l from-green-600/80 to-green-500/60"></div>
-              </div>
-              <div className="relative z-10 h-full flex flex-col items-center justify-center text-white">
-                <div className="text-3xl mb-2">🏪</div>
-                <h3 className="font-bold text-lg mb-1">{t("pickup")}</h3>
-                <p className="text-xs opacity-90">
-                  {language === "en"
-                    ? "Pick up at restaurant"
-                    : language === "ja"
-                      ? "店舗でお受け取り"
-                      : "到店自取更快"}
-                </p>
-                {selectedDelivery === "pickup" && (
-                  <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                    <div className="w-3 h-3 bg-red-600 rounded-full"></div>
-                  </div>
-                )}
-              </div>
-            </button>
-          </Link>
-        </div>
+        </Link>
       </div>
 
       {/* Search Bar */}
@@ -302,9 +241,6 @@ export default function HomePage() {
                 <span className="text-xs text-gray-600">
                   {t("distance")} {selectedStore.distance}
                 </span>
-                {selectedDelivery === "delivery" && (
-                  <span className="text-xs text-blue-600">{getLocalizedText(selectedStore, "deliveryTime")}</span>
-                )}
               </div>
             </div>
           </div>
@@ -345,9 +281,6 @@ export default function HomePage() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-600">{store.distance}</p>
-                    {selectedDelivery === "delivery" && (
-                      <p className="text-xs text-blue-600">{getLocalizedText(store, "deliveryTime")}</p>
-                    )}
                   </div>
                 </div>
               </button>

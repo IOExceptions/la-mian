@@ -22,7 +22,7 @@ export function BottomNav() {
     },
     {
       id: "order",
-      href: "/delivery",
+      href: "/pickup",
       icon: ShoppingBag,
       label: {
         zh: "点餐",
@@ -52,8 +52,8 @@ export function BottomNav() {
     if (href === "/") {
       return pathname === "/"
     }
-    if (href === "/delivery") {
-      return pathname === "/delivery" || pathname === "/pickup"
+    if (href === "/pickup") {
+      return pathname === "/pickup"
     }
     return pathname.startsWith(href)
   }

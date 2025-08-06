@@ -175,7 +175,7 @@ export default function PickupPage() {
       },
       {
         threshold: 0,
-        rootMargin: "0px 0px 0px 0px",
+        rootMargin: "-120px 0px 0px 0px", // 调整边距以适应新的布局
       },
     )
 
@@ -282,157 +282,156 @@ export default function PickupPage() {
         </div>
       </div>
 
-      {/* Main Content with Sidebar */}
-      <div className="flex">
-        {/* Left Sidebar - Categories */}
-        <div className="w-20 bg-white border-r border-gray-200 sticky top-[6rem] h-screen overflow-y-auto z-20">
-          <div className="py-4">
+      {/* Categories Bar - Tabs */}
+      <div className="bg-white border-b border-gray-200 sticky top-[6rem] z-20">
+        <div className="px-4">
+          <div className="flex overflow-x-auto scrollbar-hide">
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`w-full flex flex-col items-center gap-1 py-3 px-2 transition-colors ${
+                className={`flex items-center gap-2 px-6 py-3 transition-colors whitespace-nowrap flex-shrink-0 border-b-2 ${
                   selectedCategory === category.id
-                    ? "bg-blue-50 text-blue-600 border-r-2 border-blue-600"
-                    : "text-gray-600 hover:bg-gray-50"
+                    ? "border-blue-600 text-blue-600 bg-blue-50"
+                    : "border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                 }`}
               >
                 <span className="text-lg">{category.icon}</span>
-                <span className="text-xs font-medium text-center leading-tight">
+                <span className="text-sm font-medium">
                   {getLocalizedText(category, "name")}
                 </span>
               </button>
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Right Content - Products */}
-        <div className="flex-1 p-4">
-          {/* 来自首页的商品提示 */}
-          {selectedProduct && selectedProduct.addToCartFromHome && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-              <div className="flex items-center gap-2 text-blue-800">
-                <ShoppingCart className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {language === "en"
-                    ? "Product from homepage - Please select options"
-                    : language === "ja"
-                      ? "ホームページからの商品 - オプションを選択してください"
-                      : "来自首页的商品 - 请选择规格"}
-                </span>
-              </div>
+      {/* Main Content - Products */}
+      <div className="p-4">
+        {/* 来自首页的商品提示 */}
+        {selectedProduct && selectedProduct.addToCartFromHome && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2 text-blue-800">
+              <ShoppingCart className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {language === "en"
+                  ? "Product from homepage - Please select options"
+                  : language === "ja"
+                    ? "ホームページからの商品 - オプションを選択してください"
+                    : "来自首页的商品 - 请选择规格"}
+              </span>
             </div>
-          )}
+          </div>
+        )}
 
-          <div className="space-y-3">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="p-4">
-                  {/* Top Section: Image + Info */}
-                  <div className="flex gap-3 mb-4">
-                    {/* Left: Product Image */}
-                    <div className="w-20 h-20 flex-shrink-0">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={getLocalizedText(product, "name")}
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
-                    </div>
-
-                    {/* Right: Product Info */}
-                    <div className="flex-1 min-w-0">
-                      {/* Title and Badges */}
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-gray-800 mb-1 line-clamp-1">
-                            {getLocalizedText(product, "name")}
-                          </h3>
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                            {getLocalizedText(product, "description")}
-                          </p>
-                        </div>
-                        <div className="flex flex-col gap-1 ml-2">
-                          {(language === "en"
-                            ? product.badgesEn
-                            : language === "ja"
-                              ? product.badgesJa
-                              : product.badges
-                          ).map((badge: string) => (
-                            <Badge key={badge} className="bg-red-600 text-white text-xs px-2 py-0.5">
-                              {badge}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Popularity and Stats */}
-                      <div className="flex items-center gap-3">
-                        {/* Popular Badge */}
-                        {product.isPopular && (
-                          <div className="flex items-center gap-1 bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
-                            <TrendingUp className="w-3 h-3" />
-                            <span className="text-xs font-medium">
-                              {language === "en" ? "Popular" : language === "ja" ? "人気" : "人气"}
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Rating */}
-                        <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm text-gray-600">{product.rating}</span>
-                        </div>
-
-                        {/* Sales */}
-                        <span className="text-sm text-gray-500">{getLocalizedText(product, "sales")}</span>
-                      </div>
-                    </div>
+        <div className="space-y-3">
+          {filteredProducts.map((product) => (
+            <div
+              key={product.id}
+              className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="p-4">
+                {/* Top Section: Image + Info */}
+                <div className="flex gap-3 mb-4">
+                  {/* Left: Product Image */}
+                  <div className="w-20 h-20 flex-shrink-0">
+                    <Image
+                      src={product.image || "/placeholder.svg"}
+                      alt={getLocalizedText(product, "name")}
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
                   </div>
 
-                  {/* Bottom Section: Price + Button */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500">
-                        {language === "en" ? "From" : language === "ja" ? "〜" : "起"}
-                      </span>
-                      <span className="text-xl font-bold text-red-600">
-                        {getPriceSymbol()}
-                        {language === "en"
-                          ? Math.min(...product.specs.map((s: any) => Number.parseFloat(s.priceEn))).toFixed(2)
+                  {/* Right: Product Info */}
+                  <div className="flex-1 min-w-0">
+                    {/* Title and Badges */}
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-gray-800 mb-1 line-clamp-1">
+                          {getLocalizedText(product, "name")}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                          {getLocalizedText(product, "description")}
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-1 ml-2">
+                        {(language === "en"
+                          ? product.badgesEn
                           : language === "ja"
-                            ? Math.min(...product.specs.map((s: any) => Number.parseFloat(s.priceJa))).toFixed(0)
-                            : Math.min(...product.specs.map((s: any) => Number.parseFloat(s.price))).toFixed(0)}
-                      </span>
+                            ? product.badgesJa
+                            : product.badges
+                        ).map((badge: string) => (
+                          <Badge key={badge} className="bg-red-600 text-white text-xs px-2 py-0.5">
+                            {badge}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                    <Button
-                      onClick={() => handleProductClick(product)}
-                      className="bg-blue-600 hover:bg-blue-700 rounded-full px-6 py-2"
-                    >
-                      {language === "en" ? "Select Options" : language === "ja" ? "オプション選択" : "选择规格"}
-                    </Button>
+
+                    {/* Popularity and Stats */}
+                    <div className="flex items-center gap-3">
+                      {/* Popular Badge */}
+                      {product.isPopular && (
+                        <div className="flex items-center gap-1 bg-orange-100 text-orange-600 px-2 py-1 rounded-full">
+                          <TrendingUp className="w-3 h-3" />
+                          <span className="text-xs font-medium">
+                            {language === "en" ? "Popular" : language === "ja" ? "人気" : "人气"}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Rating */}
+                      <div className="flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm text-gray-600">{product.rating}</span>
+                      </div>
+
+                      {/* Sales */}
+                      <span className="text-sm text-gray-500">{getLocalizedText(product, "sales")}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">
-                {language === "en"
-                  ? "No ramen found"
-                  : language === "ja"
-                    ? "ラーメンが見つかりません"
-                    : "没有找到相关拉面"}
-              </p>
+                {/* Bottom Section: Price + Button */}
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">
+                      {language === "en" ? "From" : language === "ja" ? "〜" : "起"}
+                    </span>
+                    <span className="text-xl font-bold text-red-600">
+                      {getPriceSymbol()}
+                      {language === "en"
+                        ? Math.min(...product.specs.map((s: any) => Number.parseFloat(s.priceEn))).toFixed(2)
+                        : language === "ja"
+                          ? Math.min(...product.specs.map((s: any) => Number.parseFloat(s.priceJa))).toFixed(0)
+                          : Math.min(...product.specs.map((s: any) => Number.parseFloat(s.price))).toFixed(0)}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={() => handleProductClick(product)}
+                    className="bg-blue-600 hover:bg-blue-700 rounded-full px-6 py-2"
+                  >
+                    {language === "en" ? "Select Options" : language === "ja" ? "オプション選択" : "选择规格"}
+                  </Button>
+                </div>
+              </div>
             </div>
-          )}
+          ))}
         </div>
+
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">
+              {language === "en"
+                ? "No ramen found"
+                : language === "ja"
+                  ? "ラーメンが見つかりません"
+                  : "没有找到相关拉面"}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Floating Cart Button */}

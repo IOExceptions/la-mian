@@ -19,40 +19,19 @@ export function StickyDeliveryBar({ selectedDelivery, onDeliveryChange, isVisibl
       }`}
     >
       <div className="flex items-center justify-start gap-4">
-        <Link href="/delivery">
+        <Link href="/pickup">
           <button
-            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              selectedDelivery === "delivery" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors bg-green-600 text-white"
           >
             <div className="relative">
-              <span className="text-base">🚚</span>
-              {selectedDelivery === "delivery" && (
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-white rounded-full flex items-center justify-center">
-                  <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
-                </div>
-              )}
-            </div>
-            <span className="text-xs leading-none">{t("delivery")}</span>
-          </button>
-        </Link>
-
-        <button
-          onClick={() => onDeliveryChange("pickup")}
-          className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            selectedDelivery === "pickup" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          <div className="relative">
-            <span className="text-base">🏪</span>
-            {selectedDelivery === "pickup" && (
+              <span className="text-base">🏪</span>
               <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-white rounded-full flex items-center justify-center">
                 <div className="w-1 h-1 bg-green-600 rounded-full"></div>
               </div>
-            )}
-          </div>
-          <span className="text-xs leading-none">{t("pickup")}</span>
-        </button>
+            </div>
+            <span className="text-xs leading-none">{t("pickup")}</span>
+          </button>
+        </Link>
       </div>
     </div>
   )
